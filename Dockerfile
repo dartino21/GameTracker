@@ -2,6 +2,9 @@ FROM node:24-alpine AS deps
 
 WORKDIR /app
 
+ARG DATABASE_URL="postgresql://postgres:postgres@localhost:5432/gametracker?schema=public"
+ENV DATABASE_URL=$DATABASE_URL
+
 COPY package.json package-lock.json ./
 COPY prisma ./prisma
 COPY prisma.config.ts ./
