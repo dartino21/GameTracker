@@ -1,0 +1,220 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum GameStatus {
+  PLAYING
+  COMPLETED
+  DROPPED
+  PLANNED
+}
+
+enum FriendshipStatus {
+  PENDING
+  ACCEPTED
+  BLOCKED
+}
+
+enum GameSource {
+  RAWG
+  IGDB
+  STEAM
+  MANUAL
+}
+
+enum Visibility {
+  PUBLIC
+  FRIENDS
+  PRIVATE
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  username      String?   @unique
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  passwordHash  String?
+  bio           String?
+  steamId       String?   @unique
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts         Account[]
+  sessions         Session[]
+  library          UserGame[]
+  reviews          Review[]
+  sentRequests     Friendship[] @relation("FriendshipRequester")
+  receivedRequests Friendship[] @relation("FriendshipAddressee")
+
+  @@index([username])
+  @@index([steamId])
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Game {
+  id              String     @id @default(cuid())
+  source          GameSource @default(RAWG)
+  rawgId          Int?       @unique
+  igdbId          Int?       @unique
+  steamAppId      Int?       @unique
+  slug            String     @unique
+  title           String
+  description     String?
+  coverUrl        String?
+  backgroundUrl   String?
+  releasedAt      DateTime?
+  metacriticScore Int?
+  playtimeHours   Int?
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  platforms GamePlatform[]
+  genres    GameGenre[]
+  userGames UserGame[]
+  reviews   Review[]
+
+  @@index([title])
+  @@index([source])
+}
+
+model Platform {
+  id    String         @id @default(cuid())
+  name  String         @unique
+  slug  String         @unique
+  games GamePlatform[]
+}
+
+model Genre {
+  id    String      @id @default(cuid())
+  name  String      @unique
+  slug  String      @unique
+  games GameGenre[]
+}
+
+model GamePlatform {
+  gameId     String
+  platformId String
+
+  game     Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  platform Platform @relation(fields: [platformId], references: [id], onDelete: Cascade)
+
+  @@id([gameId, platformId])
+  @@index([platformId])
+}
+
+model GameGenre {
+  gameId  String
+  genreId String
+
+  game  Game  @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  genre Genre @relation(fields: [genreId], references: [id], onDelete: Cascade)
+
+  @@id([gameId, genreId])
+  @@index([genreId])
+}
+
+model UserGame {
+  id           String     @id @default(cuid())
+  userId       String
+  gameId       String
+  status       GameStatus @default(PLANNED)
+  rating       Int?
+  notes        String?
+  visibility   Visibility @default(PUBLIC)
+  startedAt    DateTime?
+  completedAt  DateTime?
+  lastPlayedAt DateTime?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  game    Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  reviews Review[]
+
+  @@unique([userId, gameId])
+  @@index([userId, status])
+  @@index([gameId])
+}
+
+model Review {
+  id         String     @id @default(cuid())
+  userId     String
+  gameId     String
+  userGameId String?
+  rating     Int?
+  title      String?
+  body       String
+  visibility Visibility @default(PUBLIC)
+  playedAt   DateTime?
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  game     Game      @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  userGame UserGame? @relation(fields: [userGameId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt])
+  @@index([gameId, createdAt])
+  @@index([userGameId])
+}
+
+model Friendship {
+  id          String           @id @default(cuid())
+  requesterId String
+  addresseeId String
+  status      FriendshipStatus @default(PENDING)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  requester User @relation("FriendshipRequester", fields: [requesterId], references: [id], onDelete: Cascade)
+  addressee User @relation("FriendshipAddressee", fields: [addresseeId], references: [id], onDelete: Cascade)
+
+  @@unique([requesterId, addresseeId])
+  @@index([addresseeId, status])
+  @@index([requesterId, status])
+}
