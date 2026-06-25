@@ -8,50 +8,39 @@ datasource db {
 }
 
 enum GameStatus {
-  PLAYING
-  COMPLETED
-  DROPPED
-  PLANNED
+  Playing
+  Completed
+  Dropped
+  PlanToPlay
 }
 
 enum FriendshipStatus {
-  PENDING
-  ACCEPTED
-  BLOCKED
-}
-
-enum GameSource {
-  RAWG
-  IGDB
-  STEAM
-  MANUAL
-}
-
-enum Visibility {
-  PUBLIC
-  FRIENDS
-  PRIVATE
+  Pending
+  Accepted
+  Rejected
+  Blocked
 }
 
 model User {
   id            String    @id @default(cuid())
-  name          String?
-  username      String?   @unique
   email         String?   @unique
-  emailVerified DateTime?
-  image         String?
-  passwordHash  String?
-  bio           String?
+  username      String?   @unique
+  avatar        String?
   steamId       String?   @unique
   createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+
+  // NextAuth-compatible fields.
+  name          String?
+  image         String?
+  emailVerified DateTime?
+  passwordHash  String?
 
   accounts         Account[]
   sessions         Session[]
-  library          UserGame[]
+  games            UserGame[]
   reviews          Review[]
-  sentRequests     Friendship[] @relation("FriendshipRequester")
-  receivedRequests Friendship[] @relation("FriendshipAddressee")
+  friendshipsSent  Friendship[] @relation("FriendshipUser1")
+  friendshipsGot   Friendship[] @relation("FriendshipUser2")
 
   @@index([username])
   @@index([steamId])
@@ -97,124 +86,68 @@ model VerificationToken {
 }
 
 model Game {
-  id              String     @id @default(cuid())
-  source          GameSource @default(RAWG)
-  rawgId          Int?       @unique
-  igdbId          Int?       @unique
-  steamAppId      Int?       @unique
-  slug            String     @unique
-  title           String
-  description     String?
-  coverUrl        String?
-  backgroundUrl   String?
-  releasedAt      DateTime?
-  metacriticScore Int?
-  playtimeHours   Int?
-  createdAt       DateTime   @default(now())
-  updatedAt       DateTime   @updatedAt
+  id          String    @id @default(cuid())
+  rawgId      Int       @unique
+  title       String
+  coverUrl    String?
+  platforms   String[]  @default([])
+  genres      String[]  @default([])
+  releaseDate DateTime?
 
-  platforms GamePlatform[]
-  genres    GameGenre[]
   userGames UserGame[]
   reviews   Review[]
 
+  @@index([rawgId])
   @@index([title])
-  @@index([source])
-}
-
-model Platform {
-  id    String         @id @default(cuid())
-  name  String         @unique
-  slug  String         @unique
-  games GamePlatform[]
-}
-
-model Genre {
-  id    String      @id @default(cuid())
-  name  String      @unique
-  slug  String      @unique
-  games GameGenre[]
-}
-
-model GamePlatform {
-  gameId     String
-  platformId String
-
-  game     Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
-  platform Platform @relation(fields: [platformId], references: [id], onDelete: Cascade)
-
-  @@id([gameId, platformId])
-  @@index([platformId])
-}
-
-model GameGenre {
-  gameId  String
-  genreId String
-
-  game  Game  @relation(fields: [gameId], references: [id], onDelete: Cascade)
-  genre Genre @relation(fields: [genreId], references: [id], onDelete: Cascade)
-
-  @@id([gameId, genreId])
-  @@index([genreId])
 }
 
 model UserGame {
-  id           String     @id @default(cuid())
-  userId       String
-  gameId       String
-  status       GameStatus @default(PLANNED)
-  rating       Int?
-  notes        String?
-  visibility   Visibility @default(PUBLIC)
-  startedAt    DateTime?
-  completedAt  DateTime?
-  lastPlayedAt DateTime?
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+  id            String      @id @default(cuid())
+  userId        String
+  gameId        String
+  status        GameStatus  @default(PlanToPlay)
+  rating        Int?
+  completedDate DateTime?
+  notes         String?
 
-  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  game    Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
-  reviews Review[]
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  game Game @relation(fields: [gameId], references: [id], onDelete: Cascade)
 
   @@unique([userId, gameId])
-  @@index([userId, status])
+  @@index([userId])
   @@index([gameId])
+  @@index([userId, status])
 }
 
 model Review {
-  id         String     @id @default(cuid())
-  userId     String
-  gameId     String
-  userGameId String?
-  rating     Int?
-  title      String?
-  body       String
-  visibility Visibility @default(PUBLIC)
-  playedAt   DateTime?
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
+  id        String   @id @default(cuid())
+  userId    String
+  gameId    String
+  content   String
+  likes     Int      @default(0)
+  createdAt DateTime @default(now())
 
-  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  game     Game      @relation(fields: [gameId], references: [id], onDelete: Cascade)
-  userGame UserGame? @relation(fields: [userGameId], references: [id], onDelete: SetNull)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  game Game @relation(fields: [gameId], references: [id], onDelete: Cascade)
 
+  @@index([userId])
+  @@index([gameId])
   @@index([userId, createdAt])
   @@index([gameId, createdAt])
-  @@index([userGameId])
 }
 
 model Friendship {
-  id          String           @id @default(cuid())
-  requesterId String
-  addresseeId String
-  status      FriendshipStatus @default(PENDING)
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
+  id      String           @id @default(cuid())
+  user1Id String
+  user2Id String
+  status  FriendshipStatus @default(Pending)
 
-  requester User @relation("FriendshipRequester", fields: [requesterId], references: [id], onDelete: Cascade)
-  addressee User @relation("FriendshipAddressee", fields: [addresseeId], references: [id], onDelete: Cascade)
+  user1 User @relation("FriendshipUser1", fields: [user1Id], references: [id], onDelete: Cascade)
+  user2 User @relation("FriendshipUser2", fields: [user2Id], references: [id], onDelete: Cascade)
 
-  @@unique([requesterId, addresseeId])
-  @@index([addresseeId, status])
-  @@index([requesterId, status])
+  @@unique([user1Id, user2Id])
+  @@index([user1Id])
+  @@index([user2Id])
+  @@index([user1Id, status])
+  @@index([user2Id, status])
 }
