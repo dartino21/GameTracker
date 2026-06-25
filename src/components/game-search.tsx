@@ -212,7 +212,7 @@ export function GameSearch({
       <div className="relative">
         <Search
           aria-hidden="true"
-          className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-zinc-400"
+          className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
         />
         <input
           aria-activedescendant={
@@ -253,12 +253,12 @@ export function GameSearch({
 
       {isOpen && canSearch ? (
         <div
-          className="absolute z-20 mt-2 max-h-96 w-full overflow-y-auto rounded-md border border-zinc-200 bg-white py-1 shadow-lg"
+          className="absolute z-20 mt-2 max-h-96 w-full overflow-y-auto border border-border bg-card py-1 shadow-[0_0_18px_rgba(255,171,46,0.2)]"
           id={listboxId}
           role="listbox"
         >
           {isLoading ? (
-            <div className="flex h-16 items-center gap-2 px-3 text-sm text-zinc-500">
+            <div className="flex h-16 items-center gap-2 px-3 text-sm text-muted-foreground">
               <Loader2 className="size-4 animate-spin" aria-hidden="true" />
               Loading games
             </div>
@@ -269,7 +269,7 @@ export function GameSearch({
           ) : null}
 
           {!isLoading && !error && visibleResults.length === 0 ? (
-            <div className="px-3 py-4 text-sm text-zinc-500">
+            <div className="px-3 py-4 text-sm text-muted-foreground">
               No games found
             </div>
           ) : null}
@@ -283,8 +283,8 @@ export function GameSearch({
                   <button
                     aria-selected={activeIndex === index}
                     className={cn(
-                      "flex min-h-20 w-full gap-3 px-3 py-2 text-left transition-colors hover:bg-zinc-100",
-                      activeIndex === index && "bg-zinc-100",
+                      "flex min-h-20 w-full gap-3 px-3 py-2 text-left transition-colors hover:bg-muted",
+                      activeIndex === index && "bg-muted",
                     )}
                     id={`${listboxId}-${index}`}
                     key={game.id}
@@ -295,28 +295,28 @@ export function GameSearch({
                     {game.background_image ? (
                       <Image
                         alt=""
-                        className="h-16 w-12 shrink-0 rounded object-cover ring-1 ring-zinc-200"
+                        className="h-16 w-12 shrink-0 rounded object-cover ring-1 ring-border"
                         height={64}
                         src={game.background_image}
                         unoptimized
                         width={48}
                       />
                     ) : (
-                      <span className="flex h-16 w-12 shrink-0 items-center justify-center rounded bg-zinc-100 text-zinc-400 ring-1 ring-zinc-200">
+                      <span className="flex h-16 w-12 shrink-0 items-center justify-center rounded bg-muted text-muted-foreground ring-1 ring-border">
                         <Gamepad2 className="size-5" aria-hidden="true" />
                       </span>
                     )}
                     <span className="min-w-0 flex-1">
-                      <span className="block truncate text-sm font-medium text-zinc-950">
+                      <span className="block truncate text-sm font-medium text-foreground">
                         {game.name}
                       </span>
-                      <span className="mt-1 block truncate text-xs text-zinc-500">
+                      <span className="mt-1 block truncate text-xs text-muted-foreground">
                         {[releaseYear, platformSummary]
                           .filter(Boolean)
                           .join(" - ") || "RAWG"}
                       </span>
                       {game.genres?.length ? (
-                        <span className="mt-2 block truncate text-xs text-zinc-500">
+                        <span className="mt-2 block truncate text-xs text-muted-foreground">
                           {game.genres
                             .slice(0, 3)
                             .map((genre) => genre.name)

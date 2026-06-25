@@ -16,9 +16,9 @@ export function AuthShell({
 }: AuthShellProps) {
   return (
     <main className="flex min-h-screen bg-background text-foreground">
-      <section className="hidden min-h-screen flex-1 flex-col justify-between bg-zinc-950 p-10 text-white lg:flex">
+      <section className="hidden min-h-screen flex-1 flex-col justify-between border-r border-border bg-sidebar p-10 text-primary lg:flex">
         <Link href="/" className="text-lg font-semibold tracking-tight">
-          GameTracker
+          <span className="text-primary">&gt;_</span> GameTracker
         </Link>
         <div className="max-w-md">
           <p className="text-3xl font-semibold leading-tight">

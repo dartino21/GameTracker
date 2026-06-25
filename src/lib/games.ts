@@ -81,6 +81,63 @@ async function fetchRawgGameById(rawgId: number) {
   return (await response.json()) as RawgGameDetails
 }
 
+export type PopularGame = {
+  id: number
+  name: string
+  released: string | null
+  background_image: string | null
+  rating: number
+  genres: string[]
+}
+
+type RawgPopularGame = {
+  id: number
+  name: string
+  released: string | null
+  background_image: string | null
+  rating: number
+  genres?: RawgGenre[] | null
+}
+
+type RawgPopularResponse = {
+  results?: RawgPopularGame[] | null
+}
+
+export async function getPopularGames(limit = 8): Promise<PopularGame[]> {
+  const now = new Date()
+  const fromDate = new Date(now)
+  fromDate.setFullYear(now.getFullYear() - 1)
+
+  const toIso = (date: Date) => date.toISOString().slice(0, 10)
+
+  const rawgUrl = new URL(RAWG_GAMES_API_URL)
+  rawgUrl.search = new URLSearchParams({
+    key: getRawgApiKey(),
+    ordering: "-added",
+    dates: `${toIso(fromDate)},${toIso(now)}`,
+    page_size: String(limit),
+  }).toString()
+
+  const response = await fetch(rawgUrl, {
+    next: { revalidate: 60 * 60 },
+  })
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch popular games from RAWG.")
+  }
+
+  const data = (await response.json()) as RawgPopularResponse
+
+  return (data.results ?? []).map((game) => ({
+    id: game.id,
+    name: game.name,
+    released: game.released,
+    background_image: game.background_image,
+    rating: game.rating,
+    genres: getGenreNames(game.genres),
+  }))
+}
+
 export async function getGameByRawgId(rawgId: number) {
   if (!Number.isInteger(rawgId) || rawgId <= 0) {
     throw new RangeError("rawgId must be a positive integer.")

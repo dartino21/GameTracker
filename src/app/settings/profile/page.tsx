@@ -34,10 +34,10 @@ export default async function ProfileSettingsPage() {
   const fallbackLabel = user.name || user.username || user.email || "GT"
 
   return (
-    <main className="min-h-screen bg-zinc-50 text-zinc-950">
+    <main className="min-h-screen bg-background text-foreground">
       <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-5 py-8 sm:px-8 lg:py-12">
         <div>
-          <p className="text-sm text-zinc-500">Настройки</p>
+          <p className="text-sm text-muted-foreground">Настройки</p>
           <h1 className="mt-1 text-3xl font-semibold tracking-tight">
             Профиль
           </h1>

@@ -114,19 +114,19 @@ export function UserJournal({ entries }: UserJournalProps) {
       <div className="mb-5 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <h2 className="text-xl font-semibold tracking-tight">Мой журнал</h2>
-          <p className="mt-1 text-sm text-zinc-500">
+          <p className="mt-1 text-sm text-muted-foreground">
             {filteredEntries.length} из {entries.length} игр
           </p>
         </div>
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          <div className="flex flex-wrap gap-1 rounded-md border border-zinc-200 bg-white p-1">
+          <div className="flex flex-wrap gap-1 border border-border bg-card p-1">
             {statusOptions.map((option) => (
               <button
                 className={cn(
-                  "h-8 rounded px-3 text-sm font-medium text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-zinc-950",
+                  "h-8 rounded px-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground",
                   statusFilter === option.value &&
-                    "bg-zinc-900 text-white hover:bg-zinc-900 hover:text-white",
+                    "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground",
                 )}
                 key={option.value}
                 onClick={() => setStatusFilter(option.value)}
@@ -141,7 +141,7 @@ export function UserJournal({ entries }: UserJournalProps) {
             <span className="sr-only">Сортировка</span>
             <ArrowDownUp
               aria-hidden="true"
-              className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-zinc-400"
+              className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
             />
             <select
               className="h-10 w-full appearance-none rounded-md border border-input bg-background px-9 text-sm outline-none transition-colors focus:border-ring focus:ring-3 focus:ring-ring/20"
@@ -169,21 +169,21 @@ export function UserJournal({ entries }: UserJournalProps) {
 
             return (
               <article
-                className="overflow-hidden rounded-md border border-zinc-200 bg-white"
+                className="overflow-hidden border border-border bg-card"
                 key={entry.id}
               >
                 <div className="flex gap-4 p-4">
                   {entry.game.coverUrl ? (
                     <Image
                       alt=""
-                      className="h-32 w-24 shrink-0 rounded object-cover ring-1 ring-zinc-200"
+                      className="h-32 w-24 shrink-0 rounded object-cover ring-1 ring-border"
                       height={128}
                       src={entry.game.coverUrl}
                       unoptimized
                       width={96}
                     />
                   ) : (
-                    <div className="flex h-32 w-24 shrink-0 items-center justify-center rounded bg-zinc-100 text-zinc-400 ring-1 ring-zinc-200">
+                    <div className="flex h-32 w-24 shrink-0 items-center justify-center rounded bg-muted text-muted-foreground ring-1 ring-border">
                       <Gamepad2 className="size-7" aria-hidden="true" />
                     </div>
                   )}
@@ -194,20 +194,20 @@ export function UserJournal({ entries }: UserJournalProps) {
                         <h3 className="line-clamp-2 font-medium leading-6">
                           {entry.game.title}
                         </h3>
-                        <p className="mt-1 truncate text-sm text-zinc-500">
+                        <p className="mt-1 truncate text-sm text-muted-foreground">
                           {meta.join(" - ") || "GameTracker"}
                         </p>
                       </div>
-                      <span className="shrink-0 rounded bg-zinc-100 px-2 py-1 text-xs font-medium text-zinc-600">
+                      <span className="shrink-0 border border-border bg-secondary px-2 py-1 text-xs font-medium text-primary">
                         {statusLabels[entry.status]}
                       </span>
                     </div>
 
-                    <div className="mt-4 flex flex-wrap gap-3 text-sm text-zinc-600">
+                    <div className="mt-4 flex flex-wrap gap-3 text-sm text-muted-foreground">
                       {entry.rating ? (
-                        <span className="flex items-center gap-1 font-medium text-zinc-950">
+                        <span className="flex items-center gap-1 font-medium text-primary">
                           <Star
-                            className="size-4 fill-zinc-950"
+                            className="size-4 fill-primary"
                             aria-hidden="true"
                           />
                           {entry.rating}/10
@@ -220,7 +220,7 @@ export function UserJournal({ entries }: UserJournalProps) {
                     </div>
 
                     {entry.game.genres.length > 0 ? (
-                      <p className="mt-3 truncate text-xs text-zinc-500">
+                      <p className="mt-3 truncate text-xs text-muted-foreground">
                         {entry.game.genres.slice(0, 4).join(", ")}
                       </p>
                     ) : null}
@@ -228,9 +228,9 @@ export function UserJournal({ entries }: UserJournalProps) {
                 </div>
 
                 {entry.notes || entry.completedDate ? (
-                  <div className="border-t border-zinc-100 px-4 py-3 text-sm text-zinc-600">
+                  <div className="border-t border-border px-4 py-3 text-sm text-muted-foreground">
                     {entry.completedDate ? (
-                      <p className="text-xs text-zinc-500">
+                      <p className="text-xs text-muted-foreground">
                         Пройдено {formatDate(entry.completedDate)}
                       </p>
                     ) : null}
@@ -244,13 +244,13 @@ export function UserJournal({ entries }: UserJournalProps) {
           })}
         </div>
       ) : (
-        <div className="rounded-md border border-dashed border-zinc-300 bg-white px-5 py-10 text-center">
+        <div className="border border-dashed border-border bg-card px-5 py-10 text-center">
           <Gamepad2
-            className="mx-auto size-8 text-zinc-400"
+            className="mx-auto size-8 text-muted-foreground"
             aria-hidden="true"
           />
           <p className="mt-3 font-medium">В журнале пока пусто</p>
-          <p className="mt-1 text-sm text-zinc-500">
+          <p className="mt-1 text-sm text-muted-foreground">
             Записи появятся здесь после добавления игр.
           </p>
         </div>

@@ -14,6 +14,8 @@ FROM node:24-alpine AS development
 
 WORKDIR /app
 
+ARG DATABASE_URL="postgresql://postgres:postgres@localhost:5432/gametracker?schema=public"
+ENV DATABASE_URL=$DATABASE_URL
 ENV NODE_ENV=development
 ENV NEXT_TELEMETRY_DISABLED=1
 

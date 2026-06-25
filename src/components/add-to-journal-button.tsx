@@ -98,7 +98,7 @@ export function AddToJournalButton({
         <div
           aria-labelledby={titleId}
           aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/55 px-4 py-8"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 px-4 py-8 backdrop-blur-sm"
           onMouseDown={(event) => {
             if (event.target === event.currentTarget) {
               closeModal()
@@ -106,8 +106,8 @@ export function AddToJournalButton({
           }}
           role="dialog"
         >
-          <div className="w-full max-w-lg rounded-md bg-white shadow-xl">
-            <div className="flex items-start justify-between gap-4 border-b border-zinc-200 px-5 py-4">
+          <div className="w-full max-w-lg border border-border bg-card shadow-[0_0_28px_rgba(255,171,46,0.25)]">
+            <div className="flex items-start justify-between gap-4 border-b border-border px-5 py-4">
               <div>
                 <h2
                   className="text-lg font-semibold tracking-tight"
@@ -115,7 +115,7 @@ export function AddToJournalButton({
                 >
                   Добавить в журнал
                 </h2>
-                <p className="mt-1 text-sm text-zinc-500">{gameTitle}</p>
+                <p className="mt-1 text-sm text-muted-foreground">{gameTitle}</p>
               </div>
               <Button
                 aria-label="Закрыть"
@@ -131,7 +131,7 @@ export function AddToJournalButton({
 
             <form className="space-y-4 px-5 py-5" onSubmit={onSubmit}>
               <label className="block">
-                <span className="text-sm font-medium text-zinc-700">
+                <span className="text-sm font-medium text-foreground">
                   Статус
                 </span>
                 <select
@@ -149,7 +149,7 @@ export function AddToJournalButton({
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <label className="block">
-                  <span className="text-sm font-medium text-zinc-700">
+                  <span className="text-sm font-medium text-foreground">
                     Оценка
                   </span>
                   <select
@@ -169,7 +169,7 @@ export function AddToJournalButton({
                 </label>
 
                 <label className="block">
-                  <span className="text-sm font-medium text-zinc-700">
+                  <span className="text-sm font-medium text-foreground">
                     Дата прохождения
                   </span>
                   <input
@@ -181,7 +181,7 @@ export function AddToJournalButton({
               </div>
 
               <label className="block">
-                <span className="text-sm font-medium text-zinc-700">
+                <span className="text-sm font-medium text-foreground">
                   Заметка
                 </span>
                 <textarea
@@ -193,12 +193,12 @@ export function AddToJournalButton({
               </label>
 
               {error ? (
-                <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-destructive">
+                <p className="border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
                   {error}
                 </p>
               ) : null}
               {message ? (
-                <p className="flex items-center gap-2 rounded-md bg-zinc-100 px-3 py-2 text-sm text-zinc-700">
+                <p className="flex items-center gap-2 border border-primary/40 bg-primary/10 px-3 py-2 text-sm text-primary">
                   <Check className="size-4" aria-hidden="true" />
                   {message}
                 </p>

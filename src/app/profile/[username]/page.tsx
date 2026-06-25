@@ -104,43 +104,43 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
   }))
 
   return (
-    <main className="min-h-screen bg-zinc-50 text-zinc-950">
+    <main className="min-h-screen bg-background text-foreground">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-5 py-8 sm:px-8 lg:py-12">
-        <section className="flex flex-col gap-6 border-b border-zinc-200 pb-8 sm:flex-row sm:items-end sm:justify-between">
+        <section className="flex flex-col gap-6 border-b border-border pb-8 sm:flex-row sm:items-end sm:justify-between">
           <div className="flex items-center gap-4">
             {avatarUrl ? (
               <Image
                 alt=""
-                className="size-20 rounded-full object-cover ring-1 ring-zinc-200"
+                className="size-20 rounded-full object-cover ring-1 ring-border"
                 height={80}
                 src={avatarUrl}
                 unoptimized
                 width={80}
               />
             ) : (
-              <div className="flex size-20 items-center justify-center rounded-full bg-zinc-900 text-xl font-semibold text-white">
+              <div className="flex size-20 items-center justify-center rounded-full border border-primary/50 bg-secondary text-xl font-semibold text-primary">
                 {getInitials(user.username, user.name)}
               </div>
             )}
             <div>
-              <p className="text-sm text-zinc-500">@{user.username}</p>
+              <p className="text-sm text-muted-foreground">@{user.username}</p>
               <h1 className="mt-1 text-3xl font-semibold tracking-tight">
                 {displayName}
               </h1>
-              <p className="mt-2 flex items-center gap-2 text-sm text-zinc-500">
+              <p className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
                 <CalendarDays className="size-4" aria-hidden="true" />
                 На GameTracker с {formatDate(user.createdAt)}
               </p>
             </div>
           </div>
           <div className="grid grid-cols-2 gap-3 sm:w-64">
-            <div className="rounded-md border border-zinc-200 bg-white p-4">
-              <p className="text-2xl font-semibold">{user._count.games}</p>
-              <p className="mt-1 text-sm text-zinc-500">игр</p>
+            <div className="border border-border bg-card p-4">
+              <p className="text-2xl font-semibold text-primary">{user._count.games}</p>
+              <p className="mt-1 text-sm text-muted-foreground">игр</p>
             </div>
-            <div className="rounded-md border border-zinc-200 bg-white p-4">
-              <p className="text-2xl font-semibold">{user._count.reviews}</p>
-              <p className="mt-1 text-sm text-zinc-500">обзоров</p>
+            <div className="border border-border bg-card p-4">
+              <p className="text-2xl font-semibold text-primary">{user._count.reviews}</p>
+              <p className="mt-1 text-sm text-muted-foreground">обзоров</p>
             </div>
           </div>
         </section>

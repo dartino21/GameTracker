@@ -73,20 +73,20 @@ export default async function GamePage({ params }: GamePageProps) {
   }
 
   return (
-    <main className="min-h-screen bg-zinc-50 text-zinc-950">
+    <main className="min-h-screen bg-background text-foreground">
       <div className="mx-auto grid w-full max-w-6xl gap-8 px-5 py-8 sm:px-8 lg:grid-cols-[18rem_1fr] lg:py-12">
         <div>
           {game.coverUrl ? (
             <Image
               alt=""
-              className="aspect-[3/4] w-full rounded-md object-cover ring-1 ring-zinc-200"
+              className="aspect-[3/4] w-full border border-border object-cover"
               height={384}
               src={game.coverUrl}
               unoptimized
               width={288}
             />
           ) : (
-            <div className="flex aspect-[3/4] w-full items-center justify-center rounded-md bg-zinc-100 text-zinc-400 ring-1 ring-zinc-200">
+            <div className="flex aspect-[3/4] w-full items-center justify-center bg-muted text-muted-foreground ring-1 ring-border">
               <Gamepad2 className="size-12" aria-hidden="true" />
             </div>
           )}
@@ -94,12 +94,12 @@ export default async function GamePage({ params }: GamePageProps) {
 
         <section className="flex flex-col gap-6">
           <div>
-            <p className="text-sm text-zinc-500">RAWG #{game.rawgId}</p>
+            <p className="text-sm text-muted-foreground">RAWG #{game.rawgId}</p>
             <h1 className="mt-2 text-4xl font-semibold tracking-tight">
               {game.title}
             </h1>
             {game.releaseDate ? (
-              <p className="mt-4 flex items-center gap-2 text-sm text-zinc-500">
+              <p className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
                 <CalendarDays className="size-4" aria-hidden="true" />
                 {formatDate(game.releaseDate)}
               </p>
@@ -109,7 +109,7 @@ export default async function GamePage({ params }: GamePageProps) {
           <div className="flex flex-wrap gap-2">
             {game.platforms.map((platform) => (
               <span
-                className="rounded bg-white px-2.5 py-1 text-sm text-zinc-600 ring-1 ring-zinc-200"
+                className="border border-border bg-secondary px-2.5 py-1 text-sm text-muted-foreground"
                 key={platform}
               >
                 {platform}
@@ -118,7 +118,7 @@ export default async function GamePage({ params }: GamePageProps) {
           </div>
 
           {game.genres.length > 0 ? (
-            <p className="text-sm text-zinc-500">{game.genres.join(", ")}</p>
+            <p className="text-sm text-muted-foreground">{game.genres.join(", ")}</p>
           ) : null}
 
           <div>
