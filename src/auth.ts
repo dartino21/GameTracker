@@ -6,6 +6,7 @@ import CredentialsProvider from "next-auth/providers/credentials"
 import DiscordProvider from "next-auth/providers/discord"
 import GoogleProvider from "next-auth/providers/google"
 
+import { loginSchema } from "@/lib/auth-validation"
 import { prisma } from "@/lib/prisma"
 
 export const authOptions: NextAuthOptions = {
@@ -22,8 +23,8 @@ export const authOptions: NextAuthOptions = {
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        identifier: {
-          label: "Email or username",
+        email: {
+          label: "Email",
           type: "text",
         },
         password: {
@@ -32,16 +33,18 @@ export const authOptions: NextAuthOptions = {
         },
       },
       async authorize(credentials) {
-        const identifier = credentials?.identifier?.trim()
-        const password = credentials?.password
+        const parsed = loginSchema.safeParse({
+          email: credentials?.email,
+          password: credentials?.password,
+        })
 
-        if (!identifier || !password) {
+        if (!parsed.success) {
           return null
         }
 
         const user = await prisma.user.findFirst({
           where: {
-            OR: [{ email: identifier }, { username: identifier }],
+            email: parsed.data.email,
           },
         })
 
@@ -49,7 +52,10 @@ export const authOptions: NextAuthOptions = {
           return null
         }
 
-        const isValidPassword = await compare(password, user.passwordHash)
+        const isValidPassword = await compare(
+          parsed.data.password,
+          user.passwordHash,
+        )
 
         if (!isValidPassword) {
           return null
@@ -59,7 +65,7 @@ export const authOptions: NextAuthOptions = {
           id: user.id,
           name: user.name,
           email: user.email,
-          image: user.image,
+          image: user.avatar ?? user.image,
           username: user.username,
         }
       },

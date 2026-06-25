@@ -2,7 +2,7 @@
 
 import { Loader2, LogIn } from "lucide-react"
 import { signIn } from "next-auth/react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { useState, useTransition } from "react"
 
 import { Button } from "@/components/ui/button"
@@ -12,9 +12,15 @@ type FieldErrors = Partial<Record<"email" | "password", string[]>>
 
 export function LoginForm() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [isPending, startTransition] = useTransition()
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
   const [formError, setFormError] = useState<string | null>(null)
+  const callbackUrl = searchParams.get("callbackUrl")
+  const redirectTo =
+    callbackUrl?.startsWith("/") && !callbackUrl.startsWith("//")
+      ? callbackUrl
+      : "/"
 
   function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -36,7 +42,7 @@ export function LoginForm() {
 
     startTransition(async () => {
       const result = await signIn("credentials", {
-        identifier: parsed.data.email,
+        email: parsed.data.email,
         password: parsed.data.password,
         redirect: false,
       })
@@ -46,7 +52,7 @@ export function LoginForm() {
         return
       }
 
-      router.push("/")
+      router.push(redirectTo)
       router.refresh()
     })
   }
