@@ -109,6 +109,7 @@ model UserGame {
   rating        Int?
   completedDate DateTime?
   notes         String?
+  createdAt     DateTime    @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   game Game @relation(fields: [gameId], references: [id], onDelete: Cascade)
@@ -117,6 +118,7 @@ model UserGame {
   @@index([userId])
   @@index([gameId])
   @@index([userId, status])
+  @@index([userId, createdAt])
 }
 
 model Review {
