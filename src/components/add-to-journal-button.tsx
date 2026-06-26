@@ -91,7 +91,7 @@ export function AddToJournalButton({
     <>
       <Button className="h-10" onClick={() => setIsOpen(true)} type="button">
         <Plus aria-hidden="true" />
-        Добавить в журнал
+        Добавить отзыв
       </Button>
 
       {isOpen ? (
