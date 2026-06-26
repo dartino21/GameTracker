@@ -8,7 +8,7 @@ ENV DATABASE_URL=$DATABASE_URL
 COPY package.json package-lock.json ./
 COPY prisma ./prisma
 COPY prisma.config.ts ./
-RUN npm ci
+RUN npm ci --ignore-scripts
 
 FROM node:24-alpine AS development
 

@@ -63,6 +63,14 @@ function getCachedSearch(cacheKey: string) {
   return cached.data;
 }
 
+function sanitizeRawgSearchResponse(data: RawgSearchResponse): RawgSearchResponse {
+  return {
+    ...data,
+    next: data.next ? "/api/search" : null,
+    previous: data.previous ? "/api/search" : null,
+  };
+}
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const query = searchParams.get("q")?.trim();
@@ -111,7 +119,9 @@ export async function GET(request: Request) {
     );
   }
 
-  const data = (await response.json()) as RawgSearchResponse;
+  const data = sanitizeRawgSearchResponse(
+    (await response.json()) as RawgSearchResponse,
+  );
 
   searchCache.set(cacheKey, {
     data,

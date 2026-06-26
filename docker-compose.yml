@@ -4,6 +4,8 @@ services:
       context: .
       target: development
     command: sh -c "npm run prisma:generate && npm run db:push && npm run dev -- --hostname 0.0.0.0"
+    env_file:
+      - .env
     ports:
       - "3000:3000"
     environment:

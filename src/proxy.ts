@@ -2,11 +2,14 @@ import { getToken } from "next-auth/jwt"
 import { type NextRequest, NextResponse } from "next/server"
 
 const authRoutes = new Set(["/login", "/register"])
+const publicRoutes = new Set(["/welcome"])
 
 function isPublicPath(pathname: string) {
   return (
     authRoutes.has(pathname) ||
+    publicRoutes.has(pathname) ||
     pathname.startsWith("/api/auth") ||
+    pathname.startsWith("/api/search") ||
     pathname.startsWith("/_next") ||
     pathname === "/favicon.ico"
   )
