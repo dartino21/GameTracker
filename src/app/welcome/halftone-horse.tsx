@@ -53,7 +53,7 @@ export function HalftoneHorse({
     let stopped = false
     let rendering = false
     let fallbackPhase = 0
-    let fallbackTimer = window.setTimeout(() => {
+    const fallbackTimer = window.setTimeout(() => {
       if (!ready && !stopped) {
         startRendering()
       }
