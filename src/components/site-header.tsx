@@ -1,4 +1,4 @@
-import { LogIn, UserRound } from "lucide-react"
+import { LogOut, UserRound } from "lucide-react"
 import { getServerSession } from "next-auth"
 import Link from "next/link"
 
@@ -30,9 +30,9 @@ export async function SiteHeader() {
             </Button>
           ) : (
             <Button asChild size="lg">
-              <Link href="/login">
-                <LogIn aria-hidden="true" />
-                Войти
+              <Link href="/welcome">
+                <LogOut aria-hidden="true" />
+                Выйти
               </Link>
             </Button>
           )}

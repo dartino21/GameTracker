@@ -50,5 +50,5 @@ export async function registerUser(
     },
   })
 
-  redirect("/login")
+  redirect("/welcome")
 }
