@@ -7,6 +7,15 @@ export const loginSchema = z.object({
 
 export const registerSchema = z
   .object({
+    username: z
+      .string()
+      .trim()
+      .min(3, "Ник должен быть не короче 3 символов")
+      .max(20, "Ник должен быть не длиннее 20 символов")
+      .regex(
+        /^[a-zA-Z0-9_]+$/,
+        "Только латиница, цифры и нижнее подчёркивание",
+      ),
     email: z.string().trim().toLowerCase().email("Введите корректный email"),
     password: z
       .string()

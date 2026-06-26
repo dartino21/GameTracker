@@ -27,10 +27,10 @@ export async function proxy(request: NextRequest) {
   }
 
   if (!token && !isPublicPath(pathname)) {
-    const loginUrl = new URL("/login", request.url)
-    loginUrl.searchParams.set("callbackUrl", `${pathname}${search}`)
+    const welcomeUrl = new URL("/welcome", request.url)
+    welcomeUrl.searchParams.set("callbackUrl", `${pathname}${search}`)
 
-    return NextResponse.redirect(loginUrl)
+    return NextResponse.redirect(welcomeUrl)
   }
 
   return NextResponse.next()

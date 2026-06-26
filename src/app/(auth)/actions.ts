@@ -1,13 +1,15 @@
 "use server"
 
 import { hash } from "bcryptjs"
-import { redirect } from "next/navigation"
 
 import { registerSchema } from "@/lib/auth-validation"
 import { prisma } from "@/lib/prisma"
 
 export type RegisterState = {
-  fieldErrors?: Partial<Record<"email" | "password" | "confirmPassword", string[]>>
+  ok?: boolean
+  fieldErrors?: Partial<
+    Record<"username" | "email" | "password" | "confirmPassword", string[]>
+  >
   formError?: string
 }
 
@@ -16,6 +18,7 @@ export async function registerUser(
   formData: FormData,
 ): Promise<RegisterState> {
   const parsed = registerSchema.safeParse({
+    username: formData.get("username"),
     email: formData.get("email"),
     password: formData.get("password"),
     confirmPassword: formData.get("confirmPassword"),
@@ -27,16 +30,25 @@ export async function registerUser(
     }
   }
 
-  const { email, password } = parsed.data
-  const existingUser = await prisma.user.findUnique({
-    where: { email },
-    select: { id: true },
-  })
+  const { username, email, password } = parsed.data
 
-  if (existingUser) {
+  const [existingEmail, existingUsername] = await Promise.all([
+    prisma.user.findUnique({ where: { email }, select: { id: true } }),
+    prisma.user.findUnique({ where: { username }, select: { id: true } }),
+  ])
+
+  if (existingEmail) {
     return {
       fieldErrors: {
         email: ["Пользователь с таким email уже существует"],
+      },
+    }
+  }
+
+  if (existingUsername) {
+    return {
+      fieldErrors: {
+        username: ["Этот ник уже занят"],
       },
     }
   }
@@ -45,10 +57,11 @@ export async function registerUser(
 
   await prisma.user.create({
     data: {
+      username,
       email,
       passwordHash,
     },
   })
 
-  redirect("/welcome")
+  return { ok: true }
 }
