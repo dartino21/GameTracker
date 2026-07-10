@@ -45,3 +45,11 @@ next-env.d.ts
 /src/generated/prisma
 
 .pinpoint/
+
+.agents
+
+.cursor
+
+
+
+skills-lock.json
