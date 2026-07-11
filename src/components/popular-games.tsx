@@ -94,7 +94,11 @@ export async function PopularGames(filters: PopularGamesProps) {
             {getPeriodLabel(selectedFilters.period)}
           </span>
         </div>
-        <PopularGamesFilters {...selectedFilters} />
+        <PopularGamesFilters
+          {...selectedFilters}
+          calendarMonth={selectedMonth}
+          isReleaseCalendar={filters.ordering === "release" && filters.period === "month"}
+        />
         {filters.ordering === "release" && filters.period === "month" ? (
           <nav
             aria-label="Месяц календаря релизов"
@@ -123,23 +127,23 @@ export async function PopularGames(filters: PopularGamesProps) {
         ) : null}
       </div>
 
-      <ul className="grid grid-cols-1 gap-px border border-border bg-border sm:grid-cols-2 lg:grid-cols-3">
+      <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         {result.games.map((game) => {
           const year = getReleaseYear(game.released)
 
           return (
             <li key={game.id}>
               <Link
-                className="group flex min-h-28 overflow-hidden bg-card transition-colors hover:bg-primary/10"
+                className="group flex h-full flex-col overflow-hidden border border-border bg-card transition-[border-color,background-color,box-shadow] duration-200 hover:border-primary hover:bg-primary/5 hover:shadow-[0_0_0_1px_color-mix(in_srgb,var(--primary)_22%,transparent)] focus-visible:border-primary"
                 href={`/games/${game.id}`}
               >
-                <div className="relative aspect-square w-28 shrink-0 overflow-hidden bg-muted sm:w-32">
+                <div className="relative aspect-video w-full overflow-hidden bg-muted">
                   {game.background_image ? (
                     <Image
                       alt=""
-                      className="object-contain transition-opacity duration-200 group-hover:opacity-90"
+                      className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
                       fill
-                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 360px"
                       src={game.background_image}
                       unoptimized
                     />
@@ -148,8 +152,9 @@ export async function PopularGames(filters: PopularGamesProps) {
                       <Gamepad2 className="size-10" aria-hidden="true" />
                     </span>
                   )}
+                  <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-background/65 to-transparent" />
                   {game.rating > 0 ? (
-                    <span className="absolute right-2 top-2 inline-flex items-center gap-1 border border-primary/60 bg-background/85 px-2 py-0.5 text-xs font-medium text-primary">
+                    <span className="absolute right-2 top-2 inline-flex items-center gap-1 border border-primary/60 bg-background/90 px-2 py-0.5 text-xs font-medium text-primary">
                       <Star
                         aria-hidden="true"
                         className="size-3 fill-primary text-primary"
@@ -158,11 +163,11 @@ export async function PopularGames(filters: PopularGamesProps) {
                     </span>
                   ) : null}
                 </div>
-                <div className="min-w-0 p-3">
-                  <p className="truncate text-sm font-medium text-foreground">
+                <div className="flex min-h-24 flex-1 flex-col p-3">
+                  <p className="line-clamp-2 text-pretty text-sm font-medium leading-5 text-foreground">
                     {game.name}
                   </p>
-                  <p className="mt-1 truncate text-xs text-muted-foreground">
+                  <p className="mt-auto pt-2 text-xs leading-4 text-muted-foreground">
                     {[year, game.genres.slice(0, 2).join(", ")]
                       .filter(Boolean)
                       .join(" · ") || "RAWG"}
