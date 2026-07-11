@@ -159,7 +159,7 @@ export function UserJournal({ entries }: UserJournalProps) {
       </div>
 
       {filteredEntries.length > 0 ? (
-        <div className="grid gap-4 lg:grid-cols-2">
+        <div className="grid gap-px border border-border bg-border lg:grid-cols-2">
           {filteredEntries.map((entry) => {
             const releaseYear = getReleaseYear(entry.game.releaseDate)
             const meta = [
@@ -169,7 +169,7 @@ export function UserJournal({ entries }: UserJournalProps) {
 
             return (
               <article
-                className="overflow-hidden border border-border bg-card"
+                className="overflow-hidden bg-card"
                 key={entry.id}
               >
                 <div className="flex gap-4 p-4">

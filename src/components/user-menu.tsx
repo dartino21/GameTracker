@@ -1,6 +1,6 @@
 "use client"
 
-import { ChevronDown, LogIn, LogOut, UserRound } from "lucide-react"
+import { ChevronDown, LogOut, UserRound } from "lucide-react"
 import { signOut } from "next-auth/react"
 import Link from "next/link"
 
@@ -40,12 +40,6 @@ export function UserMenu({ username, label }: UserMenuProps) {
             </Link>
           </DropdownMenuItem>
         ) : null}
-        <DropdownMenuItem asChild>
-          <Link href="/welcome">
-            <LogIn aria-hidden="true" />
-            Вход / регистрация
-          </Link>
-        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
           className="text-destructive focus:bg-destructive/15 focus:text-destructive"

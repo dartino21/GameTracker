@@ -207,6 +207,43 @@ export type PopularGame = {
   genres: string[]
 }
 
+const popularPeriods = ["week", "month", "year", "next-week", "all"] as const
+const popularOrderings = ["popularity", "rating", "release"] as const
+const popularGenres = ["action", "adventure", "indie", "platformer", "rpg", "shooter", "strategy"] as const
+const popularPlatforms = ["pc", "playstation", "xbox"] as const
+
+export type PopularGameFilters = {
+  period: (typeof popularPeriods)[number]
+  ordering: (typeof popularOrderings)[number]
+  genre?: (typeof popularGenres)[number]
+  platform?: (typeof popularPlatforms)[number]
+}
+
+export type PopularGamesResult = {
+  games: PopularGame[]
+  page: number
+  pageCount: number
+}
+
+export function getPopularGameFilters(
+  filters: { period?: string; ordering?: string; genre?: string; platform?: string } = {},
+): PopularGameFilters {
+  return {
+    period: (popularPeriods.includes(filters.period as PopularGameFilters["period"])
+      ? filters.period
+      : "year") as PopularGameFilters["period"],
+    ordering: (popularOrderings.includes(filters.ordering as PopularGameFilters["ordering"])
+      ? filters.ordering
+      : "popularity") as PopularGameFilters["ordering"],
+    genre: (popularGenres.includes(filters.genre as NonNullable<PopularGameFilters["genre"]>)
+      ? filters.genre
+      : undefined) as PopularGameFilters["genre"],
+    platform: (popularPlatforms.includes(filters.platform as NonNullable<PopularGameFilters["platform"]>)
+      ? filters.platform
+      : undefined) as PopularGameFilters["platform"],
+  }
+}
+
 type RawgPopularGame = {
   id: number
   name: string
@@ -217,22 +254,48 @@ type RawgPopularGame = {
 }
 
 type RawgPopularResponse = {
+  count?: number | null
   results?: RawgPopularGame[] | null
 }
 
-export async function getPopularGames(limit = 8): Promise<PopularGame[]> {
+export async function getPopularGames(
+  limit = 24,
+  filters: { period?: string; ordering?: string; genre?: string; platform?: string; page?: string; month?: string } = {},
+): Promise<PopularGamesResult> {
+  const { period, ordering, genre, platform } = getPopularGameFilters(filters)
+  const page = Math.max(1, Number.parseInt(filters.page ?? "1", 10) || 1)
   const now = new Date()
   const fromDate = new Date(now)
-  fromDate.setFullYear(now.getFullYear() - 1)
+  const toDate = new Date(now)
+  if (period === "week") fromDate.setDate(now.getDate() - 7)
+  if (period === "month") fromDate.setMonth(now.getMonth() - 1)
+  if (period === "year") fromDate.setFullYear(now.getFullYear() - 1)
+  if (period === "next-week") {
+    fromDate.setDate(now.getDate() + 1)
+    toDate.setDate(now.getDate() + 7)
+  }
+  const selectedMonth = Number(filters.month?.slice(5, 7))
+  if (period === "month" && filters.month?.match(/^\d{4}-\d{2}$/) && selectedMonth >= 1 && selectedMonth <= 12) {
+    const [year, month] = filters.month.split("-").map(Number)
+    fromDate.setFullYear(year, month - 1, 1)
+    toDate.setFullYear(year, month, 0)
+  }
 
   const toIso = (date: Date) => date.toISOString().slice(0, 10)
 
   const rawgUrl = new URL(RAWG_GAMES_API_URL)
   rawgUrl.search = new URLSearchParams({
     key: getRawgApiKey(),
-    ordering: "-added",
-    dates: `${toIso(fromDate)},${toIso(now)}`,
+    ordering: {
+      popularity: "-added",
+      rating: "-rating",
+      release: "-released",
+    }[ordering],
+    page: String(page),
     page_size: String(limit),
+    ...(period === "all" ? {} : { dates: `${toIso(fromDate)},${toIso(toDate)}` }),
+    ...(genre ? { genres: genre } : {}),
+    ...(platform ? { platforms: { pc: "4", playstation: "18", xbox: "1" }[platform] } : {}),
   }).toString()
 
   const response = await fetch(rawgUrl, {
@@ -245,14 +308,18 @@ export async function getPopularGames(limit = 8): Promise<PopularGame[]> {
 
   const data = (await response.json()) as RawgPopularResponse
 
-  return (data.results ?? []).map((game) => ({
-    id: game.id,
-    name: game.name,
-    released: game.released,
-    background_image: game.background_image,
-    rating: game.rating,
-    genres: getGenreNames(game.genres),
-  }))
+  return {
+    games: (data.results ?? []).map((game) => ({
+      id: game.id,
+      name: game.name,
+      released: game.released,
+      background_image: game.background_image,
+      rating: game.rating,
+      genres: getGenreNames(game.genres),
+    })),
+    page,
+    pageCount: Math.max(1, Math.ceil((data.count ?? 0) / limit)),
+  }
 }
 
 export async function getGameByRawgId(rawgId: number) {

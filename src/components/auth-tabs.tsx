@@ -1,6 +1,6 @@
 "use client"
 
-import { LogIn, X } from "lucide-react"
+import { X } from "lucide-react"
 import { Suspense, useState } from "react"
 
 import { LoginForm } from "@/app/(auth)/login/login-form"
@@ -21,28 +21,34 @@ export function AuthTabs() {
 
   if (!open) {
     return (
-      <Button
-        className="h-10 px-6"
+      <button
+        aria-label="Открыть форму входа и регистрации"
+        className="group flex min-h-14 w-full items-center gap-2 border-t border-border bg-background px-4 text-left text-sm transition-colors hover:bg-primary/10 focus-visible:bg-primary/10 sm:px-6"
         onClick={() => setOpen(true)}
-        size="lg"
         type="button"
       >
-        <LogIn aria-hidden="true" />
-        Войти / Регистрация
-      </Button>
+        <span className="hidden text-muted-foreground sm:inline">
+          guest@gametracker:~$
+        </span>
+        <span className="text-primary">./auth --open</span>
+        <span aria-hidden="true" className="h-4 w-2 bg-primary motion-safe:animate-pulse" />
+        <span className="ml-auto text-xs uppercase tracking-wider text-muted-foreground transition-colors group-hover:text-primary">
+          [enter]
+        </span>
+      </button>
     )
   }
 
   return (
-    <div className="w-full max-w-4xl border border-border bg-card/90 p-4 text-left shadow-[0_0_28px_rgba(255,171,46,0.18)] backdrop-blur">
+    <div className="w-full border-t border-border bg-background p-4 text-left sm:p-6">
       <div className="mb-4 flex items-center justify-between gap-3">
-        <div className="flex gap-1 border border-border bg-background/60 p-1">
+        <div className="flex gap-1 border border-border bg-card p-1">
           {tabs.map((tab) => (
             <button
+              aria-current={mode === tab.value ? "page" : undefined}
               className={cn(
-                "h-8 px-4 text-xs font-medium uppercase tracking-wider text-muted-foreground transition-colors hover:text-primary",
-                mode === tab.value &&
-                  "bg-primary/15 text-primary shadow-[0_0_10px_rgba(255,171,46,0.25)]",
+                "retro-tab h-8 px-4 text-xs font-medium uppercase tracking-wider text-muted-foreground hover:text-primary",
+                mode === tab.value && "text-primary",
               )}
               key={tab.value}
               onClick={() => setMode(tab.value)}

@@ -3,8 +3,8 @@
 import { useEffect, useRef } from "react"
 
 const VIDEO_SRC = "/horse-gallop.mp4"
-const DOT_COLOR = "#ffab2e"
-const FALLBACK_BACKGROUND = "#0b0a07"
+const DOT_COLOR = "#5eea86"
+const FALLBACK_BACKGROUND = "#050705"
 const TARGET_FPS = 24
 
 type HalftoneHorseProps = {
@@ -24,6 +24,7 @@ export function HalftoneHorse({
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
     const view = canvas
 
     const ctx = view.getContext("2d")
@@ -249,7 +250,7 @@ export function HalftoneHorse({
     }
 
     function startRendering() {
-      if (rendering) return
+      if (reducedMotion || rendering) return
       rendering = true
       raf = requestAnimationFrame(frame)
     }

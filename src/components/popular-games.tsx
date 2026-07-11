@@ -2,17 +2,67 @@ import { Gamepad2, Star } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 
-import { getPopularGames } from "@/lib/games"
+import { PopularGamesFilters } from "@/components/popular-games-filters"
+import { getPopularGameFilters, getPopularGames } from "@/lib/games"
+
+const monthLabels = ["Янв", "Фев", "Мар", "Апр", "Май", "Июн", "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"] as const
+const monthFullLabels = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"] as const
 
 function getReleaseYear(released: string | null) {
   return released ? new Date(released).getFullYear() : null
 }
 
-export async function PopularGames() {
-  let games
+function getPeriodLabel(period: string) {
+  if (period === "week") return "за неделю"
+  if (period === "month") return "за месяц"
+  if (period === "next-week") return "на следующей неделе"
+  if (period === "all") return "за все время"
+  return "за год"
+}
+
+function getSelectedMonth(value?: string) {
+  const month = Number(value?.slice(5, 7))
+  return value?.match(/^\d{4}-\d{2}$/) && month >= 1 && month <= 12
+    ? value
+    : new Date().toISOString().slice(0, 7)
+}
+
+type PopularGamesProps = {
+  period?: string
+  ordering?: string
+  genre?: string
+  platform?: string
+  month?: string
+  page?: string
+}
+
+function getSectionTitle(filters: PopularGamesProps, selectedMonth: string) {
+  if (filters.ordering !== "release" || filters.period !== "month") return "Популярные игры"
+
+  const month = Number(selectedMonth.slice(5, 7)) - 1
+  return `Календарь релизов — ${monthFullLabels[month]} ${selectedMonth.slice(0, 4)}`
+}
+
+function getPageHref(filters: PopularGamesProps, page: number) {
+  const params = new URLSearchParams()
+
+  for (const key of ["period", "ordering", "genre", "platform", "month"] as const) {
+    if (filters[key]) params.set(key, filters[key])
+  }
+
+  if (page > 1) params.set("page", String(page))
+
+  return `/?${params.toString()}`
+}
+
+export async function PopularGames(filters: PopularGamesProps) {
+  const selectedFilters = getPopularGameFilters(filters)
+  const selectedMonth = getSelectedMonth(filters.month)
+  const selectedYear = Number(selectedMonth.slice(0, 4))
+  let result
 
   try {
-    games = await getPopularGames(8)
+    result = await getPopularGames(24, filters)
   } catch {
     return (
       <section aria-labelledby="popular-heading">
@@ -23,8 +73,8 @@ export async function PopularGames() {
           Популярные игры
         </h2>
         <p className="border border-border bg-card p-6 text-sm text-muted-foreground">
-          <span className="text-destructive">! ERROR:</span> Не удалось
-          загрузить популярные игры. Попробуйте обновить страницу.
+          <span className="text-destructive">! ERROR:</span> Не удалось загрузить
+          популярные игры. Попробуйте обновить страницу.
         </p>
       </section>
     )
@@ -32,31 +82,62 @@ export async function PopularGames() {
 
   return (
     <section aria-labelledby="popular-heading">
-      <div className="mb-4 flex items-baseline justify-between border-b border-border pb-2">
-        <h2
-          className="text-xl font-semibold tracking-tight"
-          id="popular-heading"
-        >
-          <span className="text-primary">$</span> Популярные игры
-        </h2>
-        <span className="text-sm text-muted-foreground">за последний год</span>
+      <div className="mb-4 border-b border-border pb-3">
+        <div className="flex items-baseline justify-between gap-4">
+          <h2
+            className="text-xl font-semibold tracking-tight"
+            id="popular-heading"
+          >
+            <span className="text-primary">$</span> {getSectionTitle(filters, selectedMonth)}
+          </h2>
+          <span className="text-sm text-muted-foreground">
+            {getPeriodLabel(selectedFilters.period)}
+          </span>
+        </div>
+        <PopularGamesFilters {...selectedFilters} />
+        {filters.ordering === "release" && filters.period === "month" ? (
+          <nav
+            aria-label="Месяц календаря релизов"
+            className="mt-3 flex gap-3 overflow-x-auto text-sm"
+          >
+            {monthLabels.map((label, index) => {
+              const month = `${selectedYear}-${String(index + 1).padStart(2, "0")}`
+
+              return (
+                <Link
+                  aria-current={month === selectedMonth ? "date" : undefined}
+                  className={`retro-tab px-2 py-1 ${
+                    month === selectedMonth
+                      ? "border-primary text-primary"
+                      : "border-border text-muted-foreground hover:border-primary hover:text-primary"
+                  }`}
+                  href={`/?period=month&ordering=release&month=${month}`}
+                  key={month}
+                  scroll={false}
+                >
+                  {label}
+                </Link>
+              )
+            })}
+          </nav>
+        ) : null}
       </div>
 
-      <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-        {games.map((game) => {
+      <ul className="grid grid-cols-1 gap-px border border-border bg-border sm:grid-cols-2 lg:grid-cols-3">
+        {result.games.map((game) => {
           const year = getReleaseYear(game.released)
 
           return (
             <li key={game.id}>
               <Link
-                className="group block overflow-hidden border border-border bg-card transition-all hover:border-primary hover:shadow-[0_0_12px_rgba(255,171,46,0.35)]"
+                className="group flex min-h-28 overflow-hidden bg-card transition-colors hover:bg-primary/10"
                 href={`/games/${game.id}`}
               >
-                <div className="relative aspect-[3/4] w-full overflow-hidden bg-muted">
+                <div className="relative aspect-square w-28 shrink-0 overflow-hidden bg-muted sm:w-32">
                   {game.background_image ? (
                     <Image
                       alt=""
-                      className="object-cover transition-transform duration-300 group-hover:scale-105"
+                      className="object-contain transition-opacity duration-200 group-hover:opacity-90"
                       fill
                       sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                       src={game.background_image}
@@ -77,7 +158,7 @@ export async function PopularGames() {
                     </span>
                   ) : null}
                 </div>
-                <div className="border-t border-border p-3">
+                <div className="min-w-0 p-3">
                   <p className="truncate text-sm font-medium text-foreground">
                     {game.name}
                   </p>
@@ -92,6 +173,51 @@ export async function PopularGames() {
           )
         })}
       </ul>
+
+      <nav
+        aria-label="Страницы библиотеки"
+        className="mt-6 flex flex-wrap items-center justify-center gap-2"
+      >
+        {result.page > 1 ? (
+          <Link
+            className="retro-tab border-border bg-card px-3 py-2 text-sm text-muted-foreground hover:border-primary hover:text-primary"
+            href={getPageHref(filters, result.page - 1)}
+            scroll={false}
+          >
+            ← Назад
+          </Link>
+        ) : null}
+
+        {Array.from({ length: Math.min(7, result.pageCount) }, (_, index) => {
+          const page = Math.max(1, Math.min(result.page - 3, result.pageCount - 6)) + index
+
+          return (
+            <Link
+              aria-current={page === result.page ? "page" : undefined}
+              className={`retro-tab px-3 py-2 text-sm ${
+                page === result.page
+                  ? "border-primary bg-primary text-primary-foreground"
+                  : "border-border bg-card text-muted-foreground hover:border-primary hover:text-primary"
+              }`}
+              href={getPageHref(filters, page)}
+              key={page}
+              scroll={false}
+            >
+              {page}
+            </Link>
+          )
+        })}
+
+        {result.page < result.pageCount ? (
+          <Link
+            className="retro-tab border-border bg-card px-3 py-2 text-sm text-muted-foreground hover:border-primary hover:text-primary"
+            href={getPageHref(filters, result.page + 1)}
+            scroll={false}
+          >
+            Вперёд →
+          </Link>
+        ) : null}
+      </nav>
     </section>
   )
 }

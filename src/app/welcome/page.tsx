@@ -2,33 +2,27 @@ import { AuthTabs } from "@/components/auth-tabs"
 
 import { HalftoneHorse } from "./halftone-horse"
 
-export const metadata = {
-  title: "Вход и регистрация | GameTracker",
-}
+export const metadata = { title: "Вход и регистрация | GameTracker" }
 
 export default function WelcomePage() {
   return (
-    <main className="relative flex min-h-screen flex-col overflow-hidden bg-background text-foreground">
-      <HalftoneHorse />
-
-      <div className="relative z-10 flex flex-1 flex-col items-center justify-between px-5 py-10 text-center sm:py-16">
-        <header className="space-y-3">
-          <p className="text-[0.7rem] uppercase tracking-[0.35em] text-muted-foreground sm:text-xs">
-            ┌─ GAMETRACKER ─ ACCESS TERMINAL ─────────────
-          </p>
-          <h1 className="text-3xl font-bold tracking-tight sm:text-5xl">
-            <span className="text-primary">&gt;</span> Войти или
-            зарегистрироваться
-          </h1>
-          <p className="mx-auto max-w-md text-sm leading-6 text-muted-foreground sm:text-base">
-            Добро пожаловать в игровой дневник. Создайте аккаунт или войдите —
-            конь уже мчит по треку.
-            <span className="ml-1 inline-block w-2 animate-pulse bg-primary align-middle">
-              &nbsp;
-            </span>
-          </p>
-        </header>
-
+    <main className="flex min-h-screen items-center justify-center bg-background p-5 text-foreground sm:p-8">
+      <div className="terminal-window w-full max-w-4xl overflow-hidden">
+        <div className="terminal-bar">access@gametracker:~$ connect</div>
+        <div className="relative h-[26rem] overflow-hidden sm:h-[30rem]">
+          <HalftoneHorse
+            className="pointer-events-none absolute inset-0 z-0 h-full w-full opacity-75"
+            gridSize={4}
+            variant="inline"
+          />
+          <div className="relative z-10 p-6 sm:p-10">
+            <header className="max-w-2xl space-y-4">
+              <p className="terminal-prompt text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                AUTHORIZATION REQUIRED
+              </p>
+            </header>
+          </div>
+        </div>
         <AuthTabs />
       </div>
     </main>

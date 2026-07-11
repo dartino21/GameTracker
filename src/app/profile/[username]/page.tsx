@@ -1,8 +1,12 @@
 import { CalendarDays } from "lucide-react"
+import { getServerSession } from "next-auth"
 import Image from "next/image"
 import { notFound } from "next/navigation"
 
+import { authOptions } from "@/auth"
+import { UserCollections } from "@/components/user-collections"
 import { UserJournal } from "@/components/user-journal"
+import { SiteHeader } from "@/components/site-header"
 import { prisma } from "@/lib/prisma"
 
 export const dynamic = "force-dynamic"
@@ -49,6 +53,7 @@ export async function generateMetadata({ params }: ProfilePageProps) {
 export default async function ProfilePage({ params }: ProfilePageProps) {
   const { username } = await params
   const decodedUsername = decodeURIComponent(username)
+  const session = await getServerSession(authOptions)
   const user = await prisma.user.findUnique({
     where: { username: decodedUsername },
     select: {
@@ -78,6 +83,15 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
           },
         },
       },
+      collections: {
+        orderBy: { createdAt: "desc" },
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          _count: { select: { games: true } },
+        },
+      },
       _count: {
         select: {
           games: true,
@@ -105,8 +119,9 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 
   return (
     <main className="min-h-screen bg-background text-foreground">
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-5 py-8 sm:px-8 lg:py-12">
-        <section className="flex flex-col gap-6 border-b border-border pb-8 sm:flex-row sm:items-end sm:justify-between">
+      <SiteHeader />
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 border-x border-border px-5 py-6 sm:px-8 lg:py-8">
+        <section className="terminal-window flex flex-col gap-6 p-5 sm:flex-row sm:items-end sm:justify-between">
           <div className="flex items-center gap-4">
             {avatarUrl ? (
               <Image
@@ -144,6 +159,11 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
             </div>
           </div>
         </section>
+
+        <UserCollections
+          canCreate={session?.user?.id === user.id}
+          collections={user.collections}
+        />
 
         <UserJournal entries={journalEntries} />
       </div>

@@ -221,7 +221,7 @@ export function GameSearch({
           aria-autocomplete="list"
           aria-controls={listboxId}
           aria-expanded={isOpen}
-          className="h-10 w-full rounded-md border border-input bg-background px-9 text-sm outline-none transition-colors placeholder:text-muted-foreground focus:border-ring focus:ring-3 focus:ring-ring/20"
+          className="h-10 w-full border border-input bg-background px-9 text-sm outline-none transition-colors placeholder:text-muted-foreground focus:border-ring"
           id={inputId}
           onChange={(event) => {
             onQueryChange(event.target.value)
@@ -253,7 +253,7 @@ export function GameSearch({
 
       {isOpen && canSearch ? (
         <div
-          className="absolute z-20 mt-2 max-h-96 w-full overflow-y-auto border border-border bg-card py-1 shadow-[0_0_18px_rgba(255,171,46,0.2)]"
+          className="absolute z-20 mt-2 max-h-96 w-full overflow-y-auto border border-primary/70 bg-card py-1"
           id={listboxId}
           role="listbox"
         >

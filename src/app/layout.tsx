@@ -23,10 +23,15 @@ export default function RootLayout({
     <html
       lang="ru"
       className={`${terminalFont.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `document.documentElement.dataset.theme=localStorage.getItem("gametracker-theme")||"amber"`,
+          }}
+        />
         {children}
-        <div aria-hidden="true" className="crt-overlay crt-flicker" />
       </body>
     </html>
   );

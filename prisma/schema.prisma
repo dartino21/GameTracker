@@ -39,6 +39,7 @@ model User {
   sessions         Session[]
   games            UserGame[]
   reviews          Review[]
+  collections      Collection[]
   friendshipsSent  Friendship[] @relation("FriendshipUser1")
   friendshipsGot   Friendship[] @relation("FriendshipUser2")
 
@@ -96,9 +97,37 @@ model Game {
 
   userGames UserGame[]
   reviews   Review[]
+  collections CollectionGame[]
 
   @@index([rawgId])
   @@index([title])
+}
+
+model Collection {
+  id          String   @id @default(cuid())
+  userId      String
+  title       String
+  description String?
+  createdAt   DateTime @default(now())
+
+  user  User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  games CollectionGame[]
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model CollectionGame {
+  id           String @id @default(cuid())
+  collectionId String
+  gameId       String
+
+  collection Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  game       Game       @relation(fields: [gameId], references: [id], onDelete: Cascade)
+
+  @@unique([collectionId, gameId])
+  @@index([collectionId])
+  @@index([gameId])
 }
 
 model UserGame {

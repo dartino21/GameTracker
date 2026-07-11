@@ -24,7 +24,7 @@ export function HeaderSearch({ className }: HeaderSearchProps) {
     <GameSearch
       className={cn("max-w-md", className)}
       onSelect={onSelect}
-      placeholder="Найти игру…"
+      placeholder="$ найти игру…"
     />
   )
 }

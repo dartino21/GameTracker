@@ -106,7 +106,7 @@ export function AddToJournalButton({
           }}
           role="dialog"
         >
-          <div className="w-full max-w-lg border border-border bg-card shadow-[0_0_28px_rgba(255,171,46,0.25)]">
+          <div className="w-full max-w-lg border border-primary/70 bg-card">
             <div className="flex items-start justify-between gap-4 border-b border-border px-5 py-4">
               <div>
                 <h2

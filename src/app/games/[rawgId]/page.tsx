@@ -186,21 +186,21 @@ export default async function GamePage({ params }: GamePageProps) {
     <div className="flex min-h-screen flex-col bg-background text-foreground">
       <SiteHeader />
 
-      <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-10 px-5 py-8 sm:px-8 lg:py-12">
+      <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-8 border-x border-border px-5 py-6 sm:px-8 lg:py-8">
         <section className="grid gap-8 border-b border-border pb-10 lg:grid-cols-[18rem_1fr]">
           <div className="space-y-4">
             {game.coverUrl ? (
               <Image
                 alt={coverAlt}
-                className="aspect-[3/4] w-full border border-border object-cover shadow-[0_0_24px_rgba(255,171,46,0.18)]"
-                height={384}
+                className="aspect-[4/3] w-full border border-border bg-muted object-contain"
+                height={216}
                 priority
                 src={game.coverUrl}
                 unoptimized
                 width={288}
               />
             ) : (
-              <div className="flex aspect-[3/4] w-full items-center justify-center bg-muted text-muted-foreground ring-1 ring-border">
+              <div className="flex aspect-[4/3] w-full items-center justify-center bg-muted text-muted-foreground ring-1 ring-border">
                 <Gamepad2 className="size-12" aria-hidden="true" />
               </div>
             )}

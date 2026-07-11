@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth"
 
 import { authOptions } from "@/auth"
 import { AvatarUpload } from "@/components/avatar-upload"
+import { SiteHeader } from "@/components/site-header"
 import { prisma } from "@/lib/prisma"
 
 export const metadata = {
@@ -35,8 +36,9 @@ export default async function ProfileSettingsPage() {
 
   return (
     <main className="min-h-screen bg-background text-foreground">
-      <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-5 py-8 sm:px-8 lg:py-12">
-        <div>
+      <SiteHeader />
+      <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 border-x border-border px-5 py-6 sm:px-8 lg:py-8">
+        <div className="terminal-window p-5">
           <p className="text-sm text-muted-foreground">Настройки</p>
           <h1 className="mt-1 text-3xl font-semibold tracking-tight">
             Профиль

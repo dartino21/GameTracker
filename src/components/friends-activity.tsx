@@ -59,7 +59,7 @@ export function FriendsActivity() {
         Активность друзей
       </h2>
 
-      <div className="border border-border bg-card">
+      <div className="terminal-window">
         <ul className="divide-y divide-border">
           {PLACEHOLDER_ACTIVITY.map((item) => (
             <li className="flex items-center gap-3 p-3" key={item.id}>
