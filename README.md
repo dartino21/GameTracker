@@ -22,6 +22,11 @@ GameTracker - веб-приложение для ведения игрового
 - Docker Compose окружение с приложением и PostgreSQL.
 - CI для lint, тестов при наличии и сборки приложения/Docker-образа.
 
+
+<img width="1133" height="909" alt="image" src="https://github.com/user-attachments/assets/e0aacdfa-3b5a-4894-aeb1-4ecf52c3ffad" />
+
+
+
 ## Стек
 
 - Next.js 16, App Router, TypeScript
