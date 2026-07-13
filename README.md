@@ -1,4 +1,6 @@
 <img width="903" height="696" alt="chrome-capture-2026-07-13" src="https://github.com/user-attachments/assets/b9462d77-edbc-45f4-8fe3-33cd0218145c" />
+
+
 # GameTracker
 
 GameTracker - веб-приложение для ведения игрового дневника: поиск игр через RAWG, добавление игр в личный журнал, статусы прохождения, оценки, заметки, профили пользователей и базовая социальная активность.
